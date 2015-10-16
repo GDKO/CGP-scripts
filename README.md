@@ -8,13 +8,23 @@ Creates an R histogram plot from the kmc_tools histogram output
 kmer_histo.R histo.txt
 ```
 ### clc_insert.pl
-Outputs the insert size of the reads
+Outputs the insert size of the reads from clc mapping
 ```
 clc_insert.pl \
 -c [lib.cas] \   # The cas file
 -i \             # Output the insert sizes
 -o [lib] \       # Output prefix
 -lib [lib]       # Lib name
+```
+### sam_insert.pl
+Outputs the insert size of the reads from bowtie mapping 
+```
+sam_insert.pl \
+-s [lib.sam] \    # The sam file
+-f [contigs.fa] \ # The assembly file
+-i \              # Output the insert sizes
+-o [lib] \        # Output prefix
+-l [lib]          # Lib name
 ```
 ### plot_insert_freq_txt_binned.R
 Creates an R histogram plot from clc_insert.pl output
