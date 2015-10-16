@@ -23,3 +23,10 @@ Requires ggplot2
 
 plot_insert_freq_txt_binned.R [lib.cas.insert.freq.txt]
 ```
+### daa_to_tagc.pl
+Creates a tagc readable format from dianmond's daa
+```
+Required diamond in the path
+
+daa_to_tagc.pl uniref100.taxlist [assembly_se_uniref.daa]
+```
