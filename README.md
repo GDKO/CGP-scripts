@@ -20,5 +20,6 @@ clc_len_cov_gc_insert.pl \
 Creates an R histogram plot from clc_len_cov_gc_insert.pl output
 ```
 Requires ggplot2
+
 plot_insert_freq_txt_binned.R [lib.cas.insert.freq.txt]
 ```
