@@ -1,3 +1,5 @@
+#!/usr/bin/env Rscript
+
 library(tools)
 args <- commandArgs(trailingOnly = TRUE)
 file <- args[1]
