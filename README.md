@@ -3,7 +3,7 @@
 Scripts for the Caenorhabditis genome project
 
 ### kmer_histo.R
-Creates a R histogram plot from the kmc_tools histogram output
+Creates an R histogram plot from the kmc_tools histogram output
 ```
 Rscript kmer_histo.R histo.txt
 ```
@@ -15,4 +15,9 @@ clc_len_cov_gc_insert.pl \
 -i \             # Output the insert sizes
 -o [lib] \       # Output prefix
 -lib [lib]       # Lib name
+```
+### plot_insert_freq_txt_binned.R
+Creates an R histogram plot from clc_len_cov_gc_insert.pl output
+```
+plot_insert_freq_txt_binned.R [lib.cas.insert.freq.txt]
 ```
