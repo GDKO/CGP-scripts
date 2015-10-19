@@ -40,3 +40,8 @@ Requires diamond in the path
 
 daa_to_tagc.pl uniref100.taxlist [assembly_se_uniref.daa]
 ```
+### keep_unmapped_reads.pl
+Retains unmapped reads from a sam file
+```
+keep_unmapped_reads.pl [Lib.sam] >[clean_1.fq] 2>[clean_2.fq]
+```
