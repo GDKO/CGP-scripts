@@ -1,6 +1,8 @@
 #!/usr/bin/env Rscript
 
+# Author: Sujai Kumar
 # 2012-07-09
+# Modified by Georgios Koutsovoulos
 # works with R 15.0 and ggplot 0.9. 
 # Check ggplot2 help forums or contact sujai.kumar@ed.ac.uk if something doesn't run
 # because of updated programs/packages

@@ -1,5 +1,8 @@
 #!/usr/bin/env perl
 
+# Author: Sujai Kumar
+# Modified by Georgios Koutsovoulos
+
 use strict;
 use warnings;
 use Getopt::Long qw(:config pass_through no_ignore_case no_auto_abbrev);

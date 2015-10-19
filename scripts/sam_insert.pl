@@ -1,5 +1,8 @@
 #!/usr/bin/env perl
 
+# Author: Sujai Kumar
+# Modified by Georgios Koutsovoulos
+
 =head1 NAME
 
 sam_len_cov_gc_insert.pl

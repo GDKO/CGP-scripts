@@ -1,4 +1,6 @@
 #!/usr/bin/env Rscript
+# Author: Georgios Koutsovoulos
+
 
 library(tools)
 args <- commandArgs(trailingOnly = TRUE)
