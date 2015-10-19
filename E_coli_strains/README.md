@@ -1,6 +1,6 @@
 # CGP-scripts
 
-E. coli strains
+E. coli strains in the fasta file
 
 Strain | Accession Number | URL
 ------ | ---------------- | ---
