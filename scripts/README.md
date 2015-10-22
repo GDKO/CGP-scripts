@@ -45,3 +45,8 @@ Retains unmapped reads from a sam file
 ```
 keep_unmapped_reads.pl [Lib.sam] >[clean_1.fq] 2>[clean_2.fq]
 ```
+### groc_sam.pl
+Extracts reads that do not map to a contig list from sam
+```
+groc_sam.pl [list] [Lib.sam]
+```
