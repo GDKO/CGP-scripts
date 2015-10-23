@@ -115,6 +115,10 @@ print READTWO "\@$sp[0]/2\n$sp[9]\n\+\n$sp[10]\n";
 
 }
 
+close READONE;
+close READTWO;
+close SAM;
+
 print "Processed $read_pairs_count pairs\n";
 
 print STATS "Total pairs: $read_pairs_count\n";
@@ -136,3 +140,5 @@ print STATS "Include | Unmapped: $read_pairs_include_unmapped ($rounded%)\n";
 
 $rounded = sprintf("%.2f", ($read_pairs_unmapped_unmapped*100)/$read_pairs_count);
 print STATS "Unmapped | Unmapped: $read_pairs_unmapped_unmapped ($rounded%)\n";
+
+close STATS;
