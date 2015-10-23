@@ -50,3 +50,8 @@ Extracts reads that do not map to a contig list from sam
 ```
 groc_sam.pl [list] [Lib.sam]
 ```
+### assembly.rename.sh
+Renames the scaffolds of the assembly
+```
+bash assembly.rename.sh [assembly] [scaffold_name] # eg nCe.2.0
+```
