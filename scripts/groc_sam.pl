@@ -54,14 +54,14 @@ my @sp=split(/\t/,$line_s);
 if ($fp[1]&16) {
 
 	$fp[9]  =~ tr/atgcATGC/tacgTACG/;
-	$fp[9] 	=  reverse($fp[2]);
+	$fp[9] 	=  reverse($fp[9]);
 	$fp[10] =  reverse($fp[10]);
 }
 
 if ($sp[1]&16) {
 
 	$sp[9]  =~ tr/atgcATGC/tacgTACG/;
-	$sp[9]  =  reverse($sp[2]);
+	$sp[9]  =  reverse($sp[9]);
         $sp[10] =  reverse($sp[10]);
 }
 
