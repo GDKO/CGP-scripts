@@ -55,7 +55,7 @@ Renames the scaffolds of the assembly
 ```
 Requires fastaqual_select.pl in path
 
-bash assembly.rename.sh [assembly] [scaffold_name] # eg nCe.2.0
+assembly.rename.sh [assembly] [scaffold_name] # eg nCe.2.0
 ```
 ### fastaqual_select.pl
 Executes different operations in a fasta file
