@@ -1,4 +1,6 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
+
+# Author: Sujai Kumar
 
 use strict;
 use warnings;

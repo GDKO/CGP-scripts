@@ -1,3 +1,7 @@
+#!/usr/bin/env bash
+
+# Author: Sujai Kumar
+
 assemblyfile=$1
 assemblyversion=$2
   

@@ -1,5 +1,7 @@
 #!/usr/bin/env perl
 
+# Author: Georgios Koutsovoulos
+
 use strict;
 use warnings;
 
