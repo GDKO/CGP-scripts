@@ -51,6 +51,20 @@ if ($read_pairs_count % 10000000 == 0) {
 my @fp=split(/\t/,$line_f);
 my @sp=split(/\t/,$line_s);
 
+if ($fp[1]&16) {
+
+	$fp[9]  =~ tr/atgcATGC/tacgTACG/;
+	$fp[9] 	=  reverse($fp[2]);
+	$fp[10] =  reverse($fp[10]);
+}
+
+if ($sp[1]&16) {
+
+	$sp[9]  =~ tr/atgcATGC/tacgTACG/;
+	$sp[9]  =  reverse($sp[2]);
+        $sp[10] =  reverse($sp[10]);
+}
+
 my $fid=0;
 if (exists $ids{$fp[2]}) {$fid=1}
 
