@@ -7,16 +7,16 @@ use warnings;
 
 my $sam_file=$ARGV[0];
 
-open (SAM,"$samfile");
+open (SAM,"$sam_file");
 
 while (my $line=<SAM>) {
 	
 	chomp;
 	unless ($line =~ /^\@/) {
 		
-		$line_p=<SAM>;
-		@ft=split(/\t/,$line);
- 		@st=split(/\t/,$line_p);
+		my $line_p=<SAM>;
+		my @ft=split(/\t/,$line);
+ 		my @st=split(/\t/,$line_p);
 		
 		if ($ft[2] eq "*" && $st[2] eq "*") {
 	
