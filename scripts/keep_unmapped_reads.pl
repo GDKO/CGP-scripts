@@ -11,10 +11,11 @@ open (SAM,"$sam_file");
 
 while (my $line=<SAM>) {
 	
-	chomp;
+	chomp($line);
 	unless ($line =~ /^\@/) {
 		
 		my $line_p=<SAM>;
+		chomp($line_p);
 		my @ft=split(/\t/,$line);
  		my @st=split(/\t/,$line_p);
 		
