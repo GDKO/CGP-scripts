@@ -98,6 +98,6 @@ $rounded = sprintf("%.2f", ($read_include*100)/$read_count);
 print STATS "Include: $read_include ($rounded%)\n";
 
 $rounded = sprintf("%.2f", ($read_unmapped*100)/$read_count);
-print STATS "Unmapped | Unmapped: $read_unmapped ($rounded%)\n";
+print STATS "Unmapped: $read_unmapped ($rounded%)\n";
 
 close STATS;

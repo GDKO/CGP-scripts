@@ -46,9 +46,14 @@ Retains unmapped reads from a sam file
 keep_unmapped_reads.pl [Lib.sam] >[clean_1.fq] 2>[clean_2.fq]
 ```
 ### groc_sam.pl
-Extracts reads that do not map to a contig list from sam
+Extracts paired reads that do not map to a contig list from sam
 ```
 groc_sam.pl [list] [Lib.sam]
+```
+### groc_sam_se.pl
+Extracts single end reads that do not map to a contig list from sam (i.e for merged reads)
+```
+groc_sam_se.pl [list] [Lib.sam]
 ```
 ### assembly.rename.sh
 Renames the scaffolds of the assembly
