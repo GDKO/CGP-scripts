@@ -39,10 +39,9 @@ while (my $line_f=<SAM>) {
 next if $line_f =~ /^\@/;
 
 $print_fq=1;
-my $line_s=<SAM>;
 $read_count++;
 
-if ($read_count % 10000000 == 0) {
+if ($read_count % 1000000 == 0) {
 	print "Processed $read_count pairs\n";
 }
 
