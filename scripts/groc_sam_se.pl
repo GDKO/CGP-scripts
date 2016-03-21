@@ -42,7 +42,7 @@ $print_fq=1;
 $read_count++;
 
 if ($read_count % 1000000 == 0) {
-	print "Processed $read_count pairs\n";
+	print "Processed $read_count reads\n";
 }
 
 my @fp=split(/\t/,$line_f);
