@@ -41,9 +41,14 @@ Requires diamond in the path
 daa_to_tagc.pl uniref100.taxlist [assembly_se_uniref.daa]
 ```
 ### keep_unmapped_reads.pl
-Retains unmapped reads from a sam file
+Retains unmapped paired end reads from a sam file
 ```
 keep_unmapped_reads.pl [Lib.sam] >[clean_1.fq] 2>[clean_2.fq]
+```
+### keep_unmapped_reads_se.pl
+Retains unmapped single end reads from a sam file
+```
+keep_unmapped_reads_se.pl [Lib.sam] >[clean_1.fq]
 ```
 ### groc_sam.pl
 Extracts paired reads that do not map to a contig list from sam
