@@ -11,7 +11,7 @@ Filters reads based on a list of contaminant sequences (contig IDs, one per line
 Excludes only those read-pairs for which both F and R reads map to contaminant contig.
 NOTE: requires sam/bam sorted by readname.
 
-USAGE: groc.pl -l <bad_contigs.list> [-s mapping.sam | -b mapping.bam] [-f <reads_1.fq>] [-r <reads_2.fq>] [-o stats.out] [-h]
+USAGE: groc_sam.pl -l <bad_contigs.list> [-s mapping.sam | -b mapping.bam] [-f <reads_1.fq>] [-r <reads_2.fq>] [-o stats.out] [-h]
 
 OPTIONS:
   --l|list    : list of contigs to exclude reads from [required]
