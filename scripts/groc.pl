@@ -1,6 +1,7 @@
 #!/usr/bin/env perl
 
-# Author: Georgios Koutsovoulos
+## Author: Georgios Koutsovoulos
+## Modifications: reubwn
 
 use strict;
 use warnings;
