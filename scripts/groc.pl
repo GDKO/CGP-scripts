@@ -147,7 +147,7 @@ while (my $line_f=<SAM>) {
   my @fp=split(/\t/,$line_f);
 
   ## skip supplementary alignments
-  if($fp[1]&2048){
+  if($fp[1]&3328){
     next;
 
   } else {
