@@ -111,7 +111,7 @@ if ($sam_file){
       die "[ERROR] samtools error: is samtools in \$PATH?\n";
 
     } else {
-      open (SAM, "samtools view -h $bam_file |") or die $!;
+      open (SAM, "samtools view $bam_file |") or die $!;
     }
   }
 }
@@ -146,20 +146,22 @@ while (my $line_f=<SAM>) {
   ## get info for read 1
   my @fp=split(/\t/,$line_f);
 
-  ## skip supplementary alignments
+  ## skip supplementary alignments in R1
   if($fp[1]&3328){
     next;
 
   } else {
     ## get info for mate
     my $line_s=<SAM>;
-    $read_pairs_count++;
+    my @sp=split(/\t/,$line_s);
 
+    ## skip supplementary alns in R2
+    next if $sp[1]&3328;
+
+    $read_pairs_count++;
     if ($read_pairs_count % 10000000 == 0) {
       print "Processed ".commify($read_pairs_count)." pairs\n";
     }
-
-    my @sp=split(/\t/,$line_s);
 
     ## if read is on the reverse strand...
     if ($fp[1]&16) {
