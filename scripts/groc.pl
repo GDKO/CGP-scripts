@@ -10,25 +10,27 @@ use Getopt::Long;
 my $usage = "
 Filters reads based on a list of contaminant sequences (contig IDs, one per line).
 Excludes only those read-pairs for which both F and R reads map to contaminant contig.
-NOTE: requires sam/bam sorted by readname.
+NOTE: requires samtools in \$PATH
 
-USAGE: groc.pl -l <bad_contigs.list> [-s mapping.sam | -b mapping.bam] [-f <reads_1.fq>] [-r <reads_2.fq>] [-o stats.out] [-h]
+USAGE: groc.pl -l <bad_contigs.list> [-s mapping.sam | -b mapping.bam [-n -t 16]] [-p <\"-F3328\">] [-f <reads_1.fq>] [-r <reads_2.fq>] [-z] [-o stats.out] [-h]
 
 OPTIONS:
---l|list    : list of contigs to exclude reads from [required]
---s|sam     : sam file
---b|bam     : bam file (requires samtools in \$PATH) [either -s or -b is required]
---n|sort    : sort sam/bam by readname before filtering? (requires samtools in \$PATH) [default: no]
---t|threads : number of sorting/compression threads to run samtools with if -n
---f|reads_1 : filename to write filtered forward reads [default: reads_1.fq]
---r|reads_2 : filename to write filtered reverse reads [default: reads_2.fq]
---z|gzip    : compress reads using gzip? [default: no]
---k|keep    : keep readsorted files if -n? [default: delete them]
---o|out     : filename to write stats to [default: reads_filter.stats]
---h|help    : prints this help message
+--l|list      : list of contigs to exclude reads from [required]
+--s|sam       : sam file [either -s
+--b|bam       : bam file            or -b is required]
+--p|prefilter : samtools view flag prefilter(s) to apply [default \"-F3328\"]
+--n|sort      : sort sam/bam by readname before filtering? [default: no]
+--t|threads   : number of sorting/compression threads to run samtools with if -n
+--f|reads_1   : filename to write filtered forward reads [default: reads_1.fq]
+--r|reads_2   : filename to write filtered reverse reads [default: reads_2.fq]
+--z|gzip      : compress reads using gzip? [default: no]
+--k|keep      : keep readsorted files if -n? [default: delete them]
+--o|out       : filename to write stats to [default: reads_filter.stats]
+--h|help      : prints this help message
 \n";
 
 ## args with defaults
+my $prefilter = "-F3328";
 my $stats_file = "read_filter.stats";
 my $threads = 1;
 my $reads_1 = "reads_1.fq";
@@ -38,17 +40,18 @@ my $reads_2 = "reads_2.fq";
 my ($list_file,$sam_file,$bam_file,$sort,$gzip,$keep,$help,$to_delete);
 
 GetOptions (
-'list|l=s'    => \$list_file,
-'sam|s:s'     => \$sam_file,
-'bam|b:s'     => \$bam_file,
-'sort|n'      => \$sort,
-'threads|t:i' => \$threads,
-'reads_1|f:s' => \$reads_1,
-'reads_2|r:s' => \$reads_2,
-'gzip|z'      => \$gzip,
-'keep|k'      => \$keep,
-'out|o:s'     => \$stats_file,
-'help|h'      => \$help,
+'list|l=s'      => \$list_file,
+'sam|s:s'       => \$sam_file,
+'bam|b:s'       => \$bam_file,
+'sort|n'        => \$sort,
+'prefilter|p:s' => \$prefilter,
+'threads|t:i'   => \$threads,
+'reads_1|f:s'   => \$reads_1,
+'reads_2|r:s'   => \$reads_2,
+'gzip|z'        => \$gzip,
+'keep|k'        => \$keep,
+'out|o:s'       => \$stats_file,
+'help|h'        => \$help,
 );
 
 die $usage if $help;
@@ -58,11 +61,14 @@ open (LIST,"$list_file") or die $!;
 
 my %ids;
 
+print "Reading list of contigs...\n";
 while (<LIST>) {
   chomp;
   $ids{$_}=1;
 }
 close LIST;
+
+print "Prefilter for samtools view set to $prefilter...\n";
 
 ## open from sam or bam
 if ($sam_file){
@@ -80,12 +86,12 @@ if ($sam_file){
       ## sort sam file and out put to $sam_file.readsorted.sam
       system("samtools sort -@ $threads -n -O sam -T temp -o $sam_file.readsorted.sam $sam_file") or die $!;
       print "done\n";
-      open (SAM,"$sam_file.readsorted.sam") or die $!;
+      open (SAM,"samtools view $prefilter $sam_file.readsorted.sam |") or die $!;
       $to_delete = "$sam_file.readsorted.sam";
     }
 
   } else {
-    open (SAM,"$sam_file") or die $!;
+    open (SAM,"samtools view $prefilter $sam_file |") or die $!;
   }
 
 } elsif ($bam_file){
@@ -102,7 +108,7 @@ if ($sam_file){
       ## sort bam file and output to $bam_file.readsorted.sam
       system("samtools sort -@ $threads -n -O sam -T temp -o $bam_file.readsorted.sam $bam_file") or die $!;
       print "done\n";
-      open (SAM,"$bam_file.readsorted.sam") or die $!;
+      open (SAM,"samtools $prefilter $bam_file.readsorted.sam |") or die $!;
       $to_delete = "$bam_file.readsorted.sam";
     }
 
@@ -111,7 +117,7 @@ if ($sam_file){
       die "[ERROR] samtools error: is samtools in \$PATH?\n";
 
     } else {
-      open (SAM, "samtools view $bam_file |") or die $!;
+      open (SAM, "samtools view $prefilter $bam_file |") or die $!;
     }
   }
 }
@@ -143,20 +149,22 @@ while (my $line_f=<SAM>) {
 
   $print_fq=1;
 
-  ## get info for read 1
+  ## get info for paired reads
+  my $line_s=<SAM>;
   my @fp=split(/\t/,$line_f);
+  my @sp=split(/\t/,$line_s);
 
-  ## skip supplementary alignments in R1
-  if($fp[1]&3328){
-    next;
-
-  } else {
-    ## get info for mate
-    my $line_s=<SAM>;
-    my @sp=split(/\t/,$line_s);
-
-    ## skip supplementary alns in R2
-    next if $sp[1]&3328;
+#  ## skip supplementary alignments in R1
+#  if($fp[1]&3328){
+#    next;
+#
+#  } else {
+#    ## get info for mate
+#    my $line_s=<SAM>;
+#    my @sp=split(/\t/,$line_s);
+#
+#    ## skip supplementary alns in R2
+#    next if $sp[1]&3328;
 
     $read_pairs_count++;
     if ($read_pairs_count % 10000000 == 0) {
@@ -231,7 +239,7 @@ while (my $line_f=<SAM>) {
         print READTWO "\@$sp[0]/2\n$sp[9]\n\+\n$sp[10]\n";
       }
     }
-  }
+#  }
 }
 
 ## close readfiles
