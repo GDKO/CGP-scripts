@@ -31,7 +31,7 @@ OPTIONS:
 
 ## args with defaults
 my $prefilter = "-F3328";
-my $stats_file = "read_filter.stats";
+my $stats_file = "groc_filter.stats";
 my $threads = 1;
 my $reads_1 = "reads_1.fq";
 my $reads_2 = "reads_2.fq";
