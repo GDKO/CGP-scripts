@@ -10,7 +10,9 @@ use Getopt::Long;
 my $usage = "
 Filters reads based on a list of contaminant sequences (contig IDs, one per line).
 Excludes only those read-pairs for which both F and R reads map to contaminant contig.
-NOTE: requires samtools in \$PATH
+
+*NOTE1: requires samtools in \$PATH for prefiltering
+*NOTE2: requires SAM/BAM sorted by readname: \`samtools sort -n -o readsort.sam -O sam -T temp [IN_BAM]\`
 
 USAGE: groc.pl -l <bad_contigs.list> [-s mapping.sam | -b mapping.bam [-n -t 16]] [-p <\"-F3328\">] [-f <reads_1.fq>] [-r <reads_2.fq>] [-z] [-o stats.out] [-h]
 
@@ -61,14 +63,13 @@ open (LIST,"$list_file") or die $!;
 
 my %ids;
 
-print "Reading list of contigs...\n";
 while (<LIST>) {
   chomp;
   $ids{$_}=1;
 }
 close LIST;
 
-print "Prefilter for samtools view set to $prefilter...\n";
+print "\nPrefilter for samtools view set to $prefilter...\n";
 
 ## open from sam or bam
 if ($sam_file){
@@ -81,7 +82,7 @@ if ($sam_file){
       die "[ERROR] samtools error: is samtools in \$PATH?\n";
 
     } else {
-      print "Sorting sam file... ";
+      print "Sorting SAM file... ";
 
       ## sort sam file and out put to $sam_file.readsorted.sam
       system("samtools sort -@ $threads -n -O sam -T temp -o $sam_file.readsorted.sam $sam_file") or die $!;
@@ -103,7 +104,7 @@ if ($sam_file){
       die "[ERROR] samtools error: is samtools in \$PATH?\n";
 
     } else {
-      print "Sorting bam file... ";
+      print "Sorting BAM file... ";
 
       ## sort bam file and output to $bam_file.readsorted.sam
       system("samtools sort -@ $threads -n -O sam -T temp -o $bam_file.readsorted.sam $bam_file") or die $!;
