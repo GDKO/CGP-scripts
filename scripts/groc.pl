@@ -261,7 +261,7 @@ if ($sort){
 ## print stats
 print "Processed ".commify($read_pairs_count)." pairs\n";
 print STATS "Total pairs: ".commify($read_pairs_count)."\n";
-print STATS "Exclude | Exclude: ".commify($read_pairs_exclude_exclude)."(".percentage($read_pairs_exclude_exclude,$read_pairs_count).")\n";
+print STATS "Exclude | Exclude: ".commify($read_pairs_exclude_exclude)." (".percentage($read_pairs_exclude_exclude,$read_pairs_count).")\n";
 print STATS "Exclude | Unmapped: ".commify($read_pairs_exclude_unmapped)." (".percentage($read_pairs_exclude_unmapped,$read_pairs_count).")\n";
 print STATS "Exclude | Include: ".commify($read_pairs_exclude_include)." (".percentage($read_pairs_exclude_include,$read_pairs_count).")\n";
 print STATS "Include | Include: ".commify($read_pairs_include_include)." (".percentage($read_pairs_include_include,$read_pairs_count).")\n";
