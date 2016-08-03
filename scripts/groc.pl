@@ -18,8 +18,9 @@ USAGE: groc.pl -l <bad_contigs.list> [-s mapping.sam | -b mapping.bam [-n -t 16]
 
 OPTIONS:
 --l|list      : list of contigs to exclude reads from [required]
+--v|inverse   : invert action; i.e., *only include* reads mapping to -l list [default: false]
 --s|sam       : sam file [either -s
---b|bam       : bam file            or -b is required]
+--b|bam       : bam file  or -b is required]
 --p|prefilter : samtools view flag prefilter(s) to apply [default \"-F3328\"]
 --n|sort      : sort sam/bam by readname before filtering? [default: no]
 --t|threads   : number of sorting/compression threads to run samtools with if -n
@@ -27,7 +28,7 @@ OPTIONS:
 --r|reads_2   : filename to write filtered reverse reads [default: reads_2.fq]
 --z|gzip      : compress reads using gzip? [default: no]
 --k|keep      : keep readsorted files if -n? [default: delete them]
---o|out       : filename to write stats to [default: reads_filter.stats]
+--o|out       : filename to write stats to [default: groc_filter.stats]
 --h|help      : prints this help message
 \n";
 
@@ -39,10 +40,11 @@ my $reads_1 = "reads_1.fq";
 my $reads_2 = "reads_2.fq";
 
 ## other args
-my ($list_file,$sam_file,$bam_file,$sort,$gzip,$keep,$help,$to_delete);
+my ($list_file,$inverse,$sam_file,$bam_file,$sort,$gzip,$keep,$help,$to_delete);
 
 GetOptions (
 'list|l=s'      => \$list_file,
+'inverse|v'     => \$inverse,
 'sam|s:s'       => \$sam_file,
 'bam|b:s'       => \$bam_file,
 'sort|n'        => \$sort,
@@ -70,6 +72,7 @@ while (<LIST>) {
 close LIST;
 
 print "\nPrefilter for samtools view set to $prefilter...\n";
+print "Inverse set to: TRUE\n" if $inverse;
 
 ## open from sam or bam
 if ($sam_file){
@@ -155,92 +158,112 @@ while (my $line_f=<SAM>) {
   my @fp=split(/\t/,$line_f);
   my @sp=split(/\t/,$line_s);
 
-#  ## skip supplementary alignments in R1
-#  if($fp[1]&3328){
-#    next;
-#
-#  } else {
-#    ## get info for mate
-#    my $line_s=<SAM>;
-#    my @sp=split(/\t/,$line_s);
-#
-#    ## skip supplementary alns in R2
-#    next if $sp[1]&3328;
+  $read_pairs_count++;
+  if ($read_pairs_count % 10000000 == 0) {
+    print "Processed ".commify($read_pairs_count)." pairs\n";
+  }
 
-    $read_pairs_count++;
-    if ($read_pairs_count % 10000000 == 0) {
-      print "Processed ".commify($read_pairs_count)." pairs\n";
-    }
+  ## if read is on the reverse strand...
+  if ($fp[1]&16) {
+    ## ... then revcomp it
+    $fp[9]  =~ tr/atgcATGC/tacgTACG/;
+    $fp[9] 	=  reverse($fp[9]);
+    $fp[10] =  reverse($fp[10]);
+  }
+  ## ditto for read 2
+  if ($sp[1]&16) {
+    $sp[9]  =~ tr/atgcATGC/tacgTACG/;
+    $sp[9]  =  reverse($sp[9]);
+    $sp[10] =  reverse($sp[10]);
+  }
 
-    ## if read is on the reverse strand...
-    if ($fp[1]&16) {
-      ## ... then revcomp it
-      $fp[9]  =~ tr/atgcATGC/tacgTACG/;
-      $fp[9] 	=  reverse($fp[9]);
-      $fp[10] =  reverse($fp[10]);
-    }
+  ## determine if either read maps to contig on list
+  my ($fid,$sid)=(0,0);
+  if (exists $ids{$fp[2]}) {$fid=1}
+  if (exists $ids{$sp[2]}) {$sid=1}
 
-    ## ditto for read 2
-    if ($sp[1]&16) {
-      $sp[9]  =~ tr/atgcATGC/tacgTACG/;
-      $sp[9]  =  reverse($sp[9]);
-      $sp[10] =  reverse($sp[10]);
-    }
+  ## both reads are on list
+  if ($fid>0 && $sid>0) {
 
-    ## if read or mate is in -l list
-    my ($fid,$sid)=(0,0);
-    if (exists $ids{$fp[2]}) {$fid=1}
-    if (exists $ids{$sp[2]}) {$sid=1}
+    if ($inverse){
+      $read_pairs_include_include++;
 
-    ## if pair are in -l list => chuck
-    if ($fid>0 && $sid>0) {
-
+    } else {
       $read_pairs_exclude_exclude++;
       $print_fq=0;
     }
+  }
 
-    ## if pair are unmapped => keep
-    elsif (($sp[2] eq "*") && ($fp[2] eq "*")) {
+  ## both reads are unmapped
+  elsif (($sp[2] eq "*") && ($fp[2] eq "*")) {
 
+    if ($inverse){
+      $read_pairs_unmapped_unmapped++;
+      $print_fq=0;
+
+    } else {
       $read_pairs_unmapped_unmapped++;
     }
+  }
 
-    ## if either pair is in list while other is unmapped => chuck
-    elsif (($fid>0 && ($sp[2] eq "*")) || (($fp[2] eq "*") && $sid>0)) {
+  ## either read is on list while mate is unmapped
+  elsif (($fid>0 && ($sp[2] eq "*")) || (($fp[2] eq "*") && $sid>0)) {
 
+    if ($inverse){
+      $read_pairs_include_unmapped++;
+
+    } else {
       $read_pairs_exclude_unmapped++;
       $print_fq=0;
     }
+  }
 
-    ## if either pair is not on list while other is unmapped => keep
-    elsif (($fid==0 && ($sp[2] eq "*")) || (($fp[2] eq "*") && $sid==0)) {
+  ## either read is not on list while mate is unmapped
+  elsif (($fid==0 && ($sp[2] eq "*")) || (($fp[2] eq "*") && $sid==0)) {
 
+    if ($inverse){
+      $read_pairs_exclude_unmapped++;
+      $print_fq=0;
+
+    } else {
       $read_pairs_include_unmapped++;
     }
+  }
 
-    ## if read is on list while mate is not => keep
-    elsif (($fid>0 && $sid==0) || ($fid==0 && $sid>0)) {
+  ## either read is on list while mate is not
+  elsif (($fid>0 && $sid==0) || ($fid==0 && $sid>0)) {
 
+    if ($inverse){
+      $read_pairs_exclude_include++;
+      $print_fq=0;
+
+    } else {
       $read_pairs_exclude_include++;
     }
+  }
 
-    ## otherwise => keep
-    else {
+  ## otherwise...
+  else {
 
+    if ($inverse){
+      $read_pairs_exclude_exclude++;
+      $print_fq=0;
+
+    } else {
       $read_pairs_include_include++;
     }
+  }
 
-    if ($print_fq) {
-      ## print to compressed stream if -z
-      if ($gzip) {
-        print READONE_GZ "\@$fp[0]/1\n$fp[9]\n\+\n$fp[10]\n";
-        print READTWO_GZ "\@$sp[0]/2\n$sp[9]\n\+\n$sp[10]\n";
-      } else {
-        print READONE "\@$fp[0]/1\n$fp[9]\n\+\n$fp[10]\n";
-        print READTWO "\@$sp[0]/2\n$sp[9]\n\+\n$sp[10]\n";
-      }
+  if ($print_fq) {
+    ## print to compressed stream if -z
+    if ($gzip) {
+      print READONE_GZ "\@$fp[0]/1\n$fp[9]\n\+\n$fp[10]\n";
+      print READTWO_GZ "\@$sp[0]/2\n$sp[9]\n\+\n$sp[10]\n";
+    } else {
+      print READONE "\@$fp[0]/1\n$fp[9]\n\+\n$fp[10]\n";
+      print READTWO "\@$sp[0]/2\n$sp[9]\n\+\n$sp[10]\n";
     }
-#  }
+  }
 }
 
 ## close readfiles
@@ -260,6 +283,7 @@ if ($sort){
 
 ## print stats
 print "Processed ".commify($read_pairs_count)." pairs\n";
+print STATS "Inverse set to: TRUE\n" if $inverse;
 print STATS "Total pairs: ".commify($read_pairs_count)."\n";
 print STATS "Exclude | Exclude: ".commify($read_pairs_exclude_exclude)." (".percentage($read_pairs_exclude_exclude,$read_pairs_count).")\n";
 print STATS "Exclude | Unmapped: ".commify($read_pairs_exclude_unmapped)." (".percentage($read_pairs_exclude_unmapped,$read_pairs_count).")\n";
