@@ -103,7 +103,7 @@ if ($sam_file){
 		if (system("samtools view &>/dev/null")==-1){
                         die "[ERROR] samtools error: is samtools in \$PATH?\n";
 		} else {
-			open (SAM, "samtools view $bam_file |") or die $!;
+			open (SAM, "samtools view -F 3328 $bam_file |") or die $!;
 		}
 	}
 }
