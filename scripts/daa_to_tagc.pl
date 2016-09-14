@@ -36,7 +36,7 @@ chomp;
 my @columns=split(/\t/,$_);
 
 if (exists $uniref_taxid{$columns[1]}) {
-	print OUT join("\t", $columns[0],$uniref_taxid{$unirefid}, $columns[11]) . "\n";
+	print OUT join("\t", $columns[0],$uniref_taxid{$columns[1]}, $columns[11]) . "\n";
 	}
 
 }
