@@ -22,8 +22,7 @@ while (<IN>) {
 
 chomp;
 my @columns=split(/\t/,$_);
-my ($db,$unirefid)=split(/_/,$columns[0]);
-$uniref_taxid{$unirefid}=$columns[1];
+$uniref_taxid{$columns[0]}=$columns[1];
 
 }
 
@@ -35,9 +34,8 @@ while (<$cmd>){
 
 chomp;
 my @columns=split(/\t/,$_);
-my ($db,$unirefid)=split(/_/,$columns[1]);
 
-if (exists $uniref_taxid{$unirefid}) {
+if (exists $uniref_taxid{$columns[1]}) {
 	print OUT join("\t", $columns[0],$uniref_taxid{$unirefid}, $columns[11]) . "\n";
 	}
 
