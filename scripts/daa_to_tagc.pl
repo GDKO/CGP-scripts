@@ -14,31 +14,43 @@ my $diamond_file=$ARGV[1];
 
 die "Usage: daa_to_tagc.pl uniref100.taxlist [assembly_se_uniref.daa]\n" unless ( $uniref_file && $diamond_file );
 
-open (IN,"$uniref_file");
-
-my %uniref_taxid;
-
-while (<IN>) {
-
-chomp;
-my @columns=split(/\t/,$_);
-$uniref_taxid{$columns[0]}=$columns[1];
-
-}
-
-close IN;
 open my $cmd, "diamond view -a $diamond_file |";
-open OUT, ">$diamond_file.tagc";
+
+my %diamond_hits;
+my %hits;
+my $i=0;
 
 while (<$cmd>){
 
-chomp;
-my @columns=split(/\t/,$_);
+	chomp;
+	my @columns=split(/\t/,$_);
 
-if (exists $uniref_taxid{$columns[1]}) {
-	print OUT join("\t", $columns[0],$uniref_taxid{$columns[1]}, $columns[11]) . "\n";
+	$diamond_hits{$i}{"contig"}=$columns[0];
+	$diamond_hits{$i}{"hit"}=$columns[1];
+	$diamond_hits{$i}{"bitscore"}=$columns[11];
+	$hits{$columns[1]}=1;
+	$i++;
+
+}
+
+open (IN,"$uniref_file");
+
+while (<IN>) {
+
+	chomp;
+	my @columns=split(/\t/,$_);
+	if (exists $hits{$columns[0]}) {
+		$hits{$columns[0]}=$columns[1]
 	}
+}
 
+close IN;
+
+open OUT, ">$diamond_file.tagc";
+
+for (my $k=0;$k<$i;$k++) {
+
+	print OUT "$diamond_hits{$k}{contig}\t$hits{$diamond_hits{$k}{hit}}\t$diamond_hits{$k}{bitscore}\n"
 }
 
 close OUT;
