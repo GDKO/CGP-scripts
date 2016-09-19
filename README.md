@@ -11,6 +11,4 @@ Contains the fasta file from multiple E. coli strains
 ### preqc_files
 Contains precomputed preqc files
 
-```
-{% gist dad1e9e76b01f43effc2 %}
-```
+<script src="https://gist.github.com/GDKO/dad1e9e76b01f43effc2.js"></script>
