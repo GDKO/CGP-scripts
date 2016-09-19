@@ -1,8 +1,8 @@
+_[Gist explaining the pipeline](https://gist.github.com/GDKO/dad1e9e76b01f43effc2)_
+
 # CGP-scripts
 
 Resources for the Caenorhabditis genome project
-
-[Gist explaining the pipeline](https://gist.github.com/GDKO/dad1e9e76b01f43effc2)
 
 ### scripts
 Contains useful scripts
