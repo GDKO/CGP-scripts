@@ -14,3 +14,6 @@ Contains the fasta file from multiple E. coli strains
 Contains precomputed preqc files
 
 
+Please cite if you find this useful!
+
+
