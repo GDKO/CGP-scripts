@@ -26,6 +26,10 @@ while (<$cmd>){
 	my @columns=split(/\t/,$_);
 
 	$diamond_hits{$i}{"contig"}=$columns[0];
+
+	# Comment this line if you are not working in uniref
+	$columns[1]=~ s/UniRef90/UniRef100/;
+
 	$diamond_hits{$i}{"hit"}=$columns[1];
 	$diamond_hits{$i}{"bitscore"}=$columns[11];
 	$hits{$columns[1]}=1;
