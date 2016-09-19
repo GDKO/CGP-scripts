@@ -27,8 +27,10 @@ while (<$cmd>){
 
 	$diamond_hits{$i}{"contig"}=$columns[0];
 
-	# Comment this line if you are not working in uniref
-	$columns[1]=~ s/UniRef90/UniRef100/;
+	# If we have used diamond against Uniref90 but taxlist is Uniref100
+	if ($columns[1] =~ /UniRef90/) {
+		$columns[1]=~ s/UniRef90/UniRef100/;
+	}
 
 	$diamond_hits{$i}{"hit"}=$columns[1];
 	$diamond_hits{$i}{"bitscore"}=$columns[11];
