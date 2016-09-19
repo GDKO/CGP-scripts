@@ -16,4 +16,6 @@ Contains precomputed preqc files
 
 Please cite if you find this useful!
 
+[![DOI](https://zenodo.org/badge/44381494.svg)](https://zenodo.org/badge/latestdoi/44381494)
+
 
