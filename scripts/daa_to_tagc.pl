@@ -19,6 +19,7 @@ open my $cmd, "diamond view -a $diamond_file |";
 my %diamond_hits;
 my %hits;
 my $i=0;
+my $set_uniref_flag=0;
 
 while (<$cmd>){
 
@@ -28,8 +29,9 @@ while (<$cmd>){
 	$diamond_hits{$i}{"contig"}=$columns[0];
 
 	# If we have used diamond against Uniref90 but taxlist is Uniref100
-	if ($columns[1] =~ /UniRef90/) {
-		$columns[1]=~ s/UniRef90/UniRef100/;
+	if ($columns[1] =~ /UniRef/) {
+		$columns[1]=~ s/UniRef\d*//;
+		$set_uniref_flag=1;
 	}
 
 	$diamond_hits{$i}{"hit"}=$columns[1];
@@ -45,6 +47,9 @@ while (<IN>) {
 
 	chomp;
 	my @columns=split(/\t/,$_);
+	if ($set_uniref_flag) {
+		$columns[0]=~ s/UniRef\d*//;
+	}
 	if (exists $hits{$columns[0]}) {
 		$hits{$columns[0]}=$columns[1]
 	}
